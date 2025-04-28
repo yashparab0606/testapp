@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('form/', include('form.urls')),
     path('', include('form.urls')),  # This handles the root URL
+    path('', include('home.urls')),  # This handles the root URL
 ]
 

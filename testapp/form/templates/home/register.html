@@ -1,0 +1,56 @@
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediTrack - Register</title>
+    <link rel="stylesheet" href="{% static 'css/register.css' %}" />
+  </head>
+  <body>
+    <div class="register-container">
+      <!-- Left Section -->
+      <div class="register-left">
+        <h1>Get Started With,</h1>
+        <h2 class="meditrack-text">MediTrack</h2>
+
+        {% if messages %} {% for message in messages %}
+        <div style="color: red">{{ message }}</div>
+        {% endfor %} {% endif %}
+
+        <!-- Registration Form -->
+        <div class="register-form">
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="input-container">
+              <label for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username|add_class:"input-box" }}
+            </div>
+
+            <div class="input-container">
+              <label for="{{ form.password1.id_for_label }}">Password</label>
+              {{ form.password1|add_class:"input-box" }}
+            </div>
+
+            <div class="input-container">
+              <label for="{{ form.password2.id_for_label }}"
+                >Confirm Password</label
+              >
+              {{ form.password2|add_class:"input-box" }}
+            </div>
+
+            <button type="submit" class="register-btn">Register</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Section -->
+      <div class="register-right">
+        <img src="{% static 'images/logmedi.jpg' %}" alt="Register Image" />
+      </div>
+    </div>
+  </body>
+</html>

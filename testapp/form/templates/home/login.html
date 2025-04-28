@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediTrack - Login</title>
+
+    <!-- CSS for styling -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+  </head>
+  <body>
+    <div class="login-container">
+      <!-- Left Section -->
+      <div class="login-left">
+        <h1>Welcome To,</h1>
+        <h2 class="meditrack-text">MediTrack</h2>
+
+        <!-- Django messages -->
+        {% if messages %} {% for message in messages %}
+        <div style="color: red">{{ message }}</div>
+        {% endfor %} {% endif %}
+
+        <!-- Login Form -->
+        <div class="login-form">
+          <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="input-container">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                class="input-box"
+                required
+              />
+            </div>
+            <div class="input-container">
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                class="input-box"
+                required
+              />
+            </div>
+            <a href="#" class="forgot-link">Forgot?</a>
+            <button type="submit" class="login-btn">Login</button>
+            <p style="margin-top: 10px">
+              <a href="{% url 'register' %}"
+                >Don't have an account? Click here</a
+              >
+            </p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Section with image -->
+      <div class="login-right">
+        <img src="{% static 'images/logmedi.jpg' %}" alt="Login Image" />
+      </div>
+    </div>
+  </body>
+</html>

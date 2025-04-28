@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/inventory.css' %}" />
+    <script src="{% static 'js/inventory.js' %}" defer></script>
+    <title>Inventory Page</title>
+    <style>
+      /* General styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar styles */
+      .sidebar {
+        width: 250px;
+        background-color: #e6f7ff;
+        padding: 20px;
+        transition: width 0.3s;
+      }
+
+      .sidebar.closed {
+        width: 60px;
+      }
+
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .username {
+        margin-left: 5px;
+      }
+
+      .menu ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin: 10px 0;
+      }
+
+      .menu a {
+        text-decoration: none;
+        color: #007bff;
+        transition: color 0.3s;
+      }
+
+      .menu a:hover {
+        color: #0056b3;
+      }
+
+      /* Main content styles */
+      .main-content {
+        flex: 1;
+        padding: 20px;
+        background-color: white;
+        overflow-y: auto;
+      }
+
+      .input-section {
+        margin-bottom: 20px;
+      }
+
+      .input-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+
+      .input-row input {
+        flex: 1;
+        padding: 10px;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .search-bar {
+        position: relative;
+      }
+
+      .search-bar input {
+        width: calc(100% - 40px);
+        display: inline-block;
+      }
+
+      .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .data-container {
+        margin-top: 20px;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table th,
+      table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+      }
+
+      /* Button styles */
+      .view-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .view-button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Basic Styles for Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+      }
+
+      /* Individual Pagination Links */
+      .pagination a {
+        text-decoration: none; /* No underline on links */
+        color: purple; /* Color for 'first' and 'previous' */
+        padding: 5px 10px; /* Spacing around links */
+        margin: 0 5px; /* Space between links */
+        border-radius: 3px; /* Rounded corners */
+        transition: background-color 0.3s; /* Smooth hover effect */
+      }
+
+      /* Hover Effect */
+      .pagination a:hover {
+        background-color: lightgray; /* Background color change on hover */
+      }
+
+      /* Specialty for 'Page of' Text */
+      .pagination .page-info {
+        margin: 0 10px; /* Space around page info */
+        color: black; /* Color for the page info */
+        font-weight: bold; /* Bold text */
+      }
+
+      /* Adjusting 'next' and 'last' Links */
+      .pagination .next,
+      .pagination .last {
+        color: blue; /* Color for 'next' and 'last' */
+      }
+
+      /* Responsive Adaptation */
+      @media (max-width: 600px) {
+        .pagination {
+          flex-direction: column; /* Stack vertically on small screens */
+        }
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 100px;
+        }
+
+        .sidebar.closed {
+          width: 60px;
+        }
+
+        .input-row {
+          flex-direction: column;
+        }
+
+        .input-row input {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <img
+            src="{% static 'images/worker.png' %}"
+            alt="Profile Icon"
+            class="profile-icon"
+          />
+          {% if request.user.is_authenticated %}
+          <span class="username">👋 {{ request.user.username }}</span>
+          {% endif %}
+          <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        </div>
+        <div class="menu">
+          <ul>
+            <li><a href="{% url 'stock_analysis' %}">Stock Analysis</a></li>
+            <li>
+              <a href="{% url 'alternate_medicine' %}">Alternate Medicine</a>
+            </li>
+            <li>
+              <a href="{% url 'upload_prescription' %}">Upload Prescription</a>
+            </li>
+            <li>
+              <a href="{% url 'upload_medicine_image' %}"
+                >Upload Medicine Image</a
+              >
+            </li>
+            <li><a href="{% url 'side_effects' %}">Side Effects</a></li>
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="input-section">
+          <div class="input-fields">
+            <div class="input-row">
+              <input type="text" placeholder="Customer Name" />
+              <input type="text" placeholder="Medical Name" />
+            </div>
+            <div class="input-row">
+              <input type="text" placeholder="Bill Number" />
+              <input type="date" />
+            </div>
+          </div>
+          <div class="search-bar">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search..."
+              onkeyup="searchMedicine()"
+            />
+            <img
+              src="{% static 'images/search.png' %}"
+              class="search-icon"
+              alt="Search Icon"
+            />
+            <div class="dropdown-results" id="dropdown-results"></div>
+          </div>
+        </div>
+
+        <!-- Data Container -->
+        <div class="data-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Medicine Name</th>
+                <th>Manufacturer</th>
+                <th>Salt Composition</th>
+                <th>Pack Size</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Image URL</th>
+                <th>Expiry Date</th>
+                <th>Use</th>
+                <th>Habit Forming</th>
+                <th>Therapeutic Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for medicine in page_obj %}
+              <tr>
+                <td>{{ medicine.name }}</td>
+                <td>{{ medicine.manufacturer_name }}</td>
+                <td>{{ medicine.salt_composition }}</td>
+                <td>{{ medicine.pack_size_label }}</td>
+                <td>{{ medicine.quantity }}</td>
+                <td>{{ medicine.price }}</td>
+                <td>
+                  {% if medicine.image_url %}
+                  <button
+                    class="view-button"
+                    onclick="window.open('{{ medicine.image_url }}', '_blank')"
+                  >
+                    View
+                  </button>
+                  {% else %} N/A {% endif %}
+                </td>
+                <td>{{ medicine.expiry_date }}</td>
+                <td>{{ medicine.use0 }}</td>
+                <td>{{ medicine.habit_forming }}</td>
+                <td>{{ medicine.therapeutic_class }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <span class="step-links">
+              {% if page_obj.has_previous %}
+              <a href="?page=1" class="first-page">&laquo; First</a>
+              <a
+                href="?page={{ page_obj.previous_page_number }}"
+                class="previous-page"
+                >Previous</a
+              >
+              {% endif %}
+
+              <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+              </span>
+
+              {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}" class="next-page"
+                >Next</a
+              >
+              <a
+                href="?page={{ page_obj.paginator.num_pages }}"
+                class="last-page"
+                >Last &raquo;</a
+              >
+              {% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("closed");
+      }
+
+      function searchMedicine() {
+        const searchInput = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+        const dropdownResults = document.getElementById("dropdown-results");
+        const dataContainer = document.querySelector(".data-container tbody");
+
+        dropdownResults.innerHTML = ""; // Clear previous results
+
+        if (searchInput.trim() === "") {
+          dropdownResults.style.display = "none";
+          return;
+        }
+
+        let matches = [];
+
+        // Loop through data container rows
+        dataContainer.querySelectorAll("tr").forEach((row) => {
+          const medicineName = row
+            .querySelector("td:first-child")
+            .textContent.toLowerCase();
+
+          if (medicineName.includes(searchInput)) {
+            matches.push(medicineName);
+          }
+        });
+
+        if (matches.length > 0) {
+          dropdownResults.style.display = "block";
+
+          matches.forEach((match) => {
+            const resultItem = document.createElement("div");
+            resultItem.textContent = match;
+            resultItem.onclick = function () {
+              document.getElementById("search-input").value = match;
+              dropdownResults.style.display = "none";
+            };
+
+            dropdownResults.appendChild(resultItem);
+          });
+        } else {
+          dropdownResults.innerHTML = "<div>No matches found</div>";
+          dropdownResults.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>
